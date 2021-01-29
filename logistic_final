@@ -1,0 +1,1781 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 184,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import numpy as np\n",
+    "import pandas as pd\n",
+    "import matplotlib.pyplot as plt\n",
+    "import math"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 185,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "data=pd.read_csv(\"simmons.csv\")"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 186,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>Customer</th>\n",
+       "      <th>HasCard</th>\n",
+       "      <th>Spends</th>\n",
+       "      <th>UsesCoupon</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <td>0</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>8.581598</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>1</td>\n",
+       "      <td>2</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1.464047</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>2</td>\n",
+       "      <td>3</td>\n",
+       "      <td>0</td>\n",
+       "      <td>3.464725</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>3</td>\n",
+       "      <td>4</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0.801979</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>4</td>\n",
+       "      <td>5</td>\n",
+       "      <td>0</td>\n",
+       "      <td>9.960163</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "   Customer  HasCard    Spends  UsesCoupon\n",
+       "0         1        0  8.581598           1\n",
+       "1         2        0  1.464047           0\n",
+       "2         3        0  3.464725           0\n",
+       "3         4        1  0.801979           1\n",
+       "4         5        0  9.960163           1"
+      ]
+     },
+     "execution_count": 186,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "data.head(5)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 187,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>HasCard</th>\n",
+       "      <th>Spends</th>\n",
+       "      <th>UsesCoupon</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>8.581598</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1.464047</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>2</td>\n",
+       "      <td>0</td>\n",
+       "      <td>3.464725</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>3</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0.801979</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>4</td>\n",
+       "      <td>0</td>\n",
+       "      <td>9.960163</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>995</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1.773487</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>996</td>\n",
+       "      <td>0</td>\n",
+       "      <td>3.026836</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>997</td>\n",
+       "      <td>1</td>\n",
+       "      <td>9.309856</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>998</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1.739323</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>999</td>\n",
+       "      <td>0</td>\n",
+       "      <td>2.559551</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>1000 rows × 3 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "     HasCard    Spends  UsesCoupon\n",
+       "0          0  8.581598           1\n",
+       "1          0  1.464047           0\n",
+       "2          0  3.464725           0\n",
+       "3          1  0.801979           1\n",
+       "4          0  9.960163           1\n",
+       "..       ...       ...         ...\n",
+       "995        0  1.773487           0\n",
+       "996        0  3.026836           0\n",
+       "997        1  9.309856           1\n",
+       "998        0  1.739323           0\n",
+       "999        0  2.559551           0\n",
+       "\n",
+       "[1000 rows x 3 columns]"
+      ]
+     },
+     "execution_count": 187,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "data=data.drop(columns=['Customer'])\n",
+    "data"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 188,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "X=data[[\"HasCard\",\"Spends\"]]\n",
+    "y=data[\"UsesCoupon\"]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 189,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "class LogisticRegression:\n",
+    "    def __init__(self, lr=0.01, num_iter=100000, fit_intercept=True, verbose=False):\n",
+    "        self.lr = lr\n",
+    "        self.num_iter = num_iter\n",
+    "        self.fit_intercept = fit_intercept\n",
+    "        self.verbose = verbose\n",
+    "    \n",
+    "    def __add_intercept(self, X):\n",
+    "        intercept = np.ones((X.shape[0], 1))\n",
+    "        return np.concatenate((intercept, X), axis=1)\n",
+    "    \n",
+    "    def __sigmoid(self, z):\n",
+    "        return 1 / (1 + np.exp(-z))\n",
+    "    def __loss(self, h, y):\n",
+    "        return (-y * np.log(h) - (1 - y) * np.log(1 - h)).mean()\n",
+    "    \n",
+    "    def fit(self, X, y):\n",
+    "        if self.fit_intercept:\n",
+    "            X = self.__add_intercept(X)\n",
+    "        \n",
+    "        # weights initialization\n",
+    "        self.theta = np.zeros(X.shape[1])\n",
+    "        \n",
+    "        for i in range(self.num_iter):\n",
+    "            z = np.dot(X, self.theta)\n",
+    "            h = self.__sigmoid(z)\n",
+    "            gradient = np.dot(X.T, (h - y)) / y.size\n",
+    "            self.theta -= self.lr * gradient\n",
+    "            \n",
+    "            z = np.dot(X, self.theta)\n",
+    "            h = self.__sigmoid(z)\n",
+    "            loss = self.__loss(h, y)\n",
+    "                \n",
+    "            if(self.verbose ==True and i % 10000 == 0):\n",
+    "                print(f'loss: {loss} \\t')\n",
+    "    \n",
+    "    def predict_prob(self, X):\n",
+    "        if self.fit_intercept:\n",
+    "            X = self.__add_intercept(X)\n",
+    "    \n",
+    "        return self.__sigmoid(np.dot(X, self.theta))\n",
+    "    \n",
+    "    def predict(self, X):\n",
+    "        return self.predict_prob(X).round()\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 190,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/Users/mihikagupta/Applications/anaconda3/lib/python3.7/site-packages/ipykernel_launcher.py:15: RuntimeWarning: divide by zero encountered in log\n",
+      "  from ipykernel import kernelapp as app\n"
+     ]
+    }
+   ],
+   "source": [
+    "model = LogisticRegression(lr=0.1, num_iter=300000)\n",
+    "model.fit(X, y)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 191,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "0.999"
+      ]
+     },
+     "execution_count": 191,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "preds = model.predict(X)\n",
+    "(preds == y).mean()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 192,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "array([-23.36240271,  26.9410355 ,   5.77573975])"
+      ]
+     },
+     "execution_count": 192,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "model.theta"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 193,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>0</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <td>0</td>\n",
+       "      <td>-23.362403</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>1</td>\n",
+       "      <td>26.941035</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>2</td>\n",
+       "      <td>5.775740</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "           0\n",
+       "0 -23.362403\n",
+       "1  26.941035\n",
+       "2   5.775740"
+      ]
+     },
+     "execution_count": 193,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "x=pd.DataFrame(model.theta)\n",
+    "x"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 194,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>0</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <td>1</td>\n",
+       "      <td>26.941035</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>2</td>\n",
+       "      <td>5.775740</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "           0\n",
+       "1  26.941035\n",
+       "2   5.775740"
+      ]
+     },
+     "execution_count": 194,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "x2_x3=x[1:3]\n",
+    "x2_x3"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 195,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>x1</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <td>0</td>\n",
+       "      <td>-23.362403</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>1</td>\n",
+       "      <td>-23.362403</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>2</td>\n",
+       "      <td>-23.362403</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>3</td>\n",
+       "      <td>-23.362403</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>4</td>\n",
+       "      <td>-23.362403</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>995</td>\n",
+       "      <td>-23.362403</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>996</td>\n",
+       "      <td>-23.362403</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>997</td>\n",
+       "      <td>-23.362403</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>998</td>\n",
+       "      <td>-23.362403</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>999</td>\n",
+       "      <td>-23.362403</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>1000 rows × 1 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "            x1\n",
+       "0   -23.362403\n",
+       "1   -23.362403\n",
+       "2   -23.362403\n",
+       "3   -23.362403\n",
+       "4   -23.362403\n",
+       "..         ...\n",
+       "995 -23.362403\n",
+       "996 -23.362403\n",
+       "997 -23.362403\n",
+       "998 -23.362403\n",
+       "999 -23.362403\n",
+       "\n",
+       "[1000 rows x 1 columns]"
+      ]
+     },
+     "execution_count": 195,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "x1=[-23.362403] * 1000\n",
+    "x1=pd.DataFrame(x1,columns={\"x1\"})\n",
+    "x1"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 196,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>x1</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <td>0</td>\n",
+       "      <td>26.202676</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>1</td>\n",
+       "      <td>-14.906447</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>2</td>\n",
+       "      <td>-3.351053</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>3</td>\n",
+       "      <td>8.210655</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>4</td>\n",
+       "      <td>34.164908</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>995</td>\n",
+       "      <td>-13.119206</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>996</td>\n",
+       "      <td>-5.880187</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>997</td>\n",
+       "      <td>57.349939</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>998</td>\n",
+       "      <td>-13.316526</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>999</td>\n",
+       "      <td>-8.579103</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>1000 rows × 1 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "            x1\n",
+       "0    26.202676\n",
+       "1   -14.906447\n",
+       "2    -3.351053\n",
+       "3     8.210655\n",
+       "4    34.164908\n",
+       "..         ...\n",
+       "995 -13.119206\n",
+       "996  -5.880187\n",
+       "997  57.349939\n",
+       "998 -13.316526\n",
+       "999  -8.579103\n",
+       "\n",
+       "[1000 rows x 1 columns]"
+      ]
+     },
+     "execution_count": 196,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "yy=np.dot(X,x2_x3)+x1\n",
+    "yy"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 197,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "sigma = lambda x: 1 / (1 + math.exp(-x))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 198,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>x1</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <td>0</td>\n",
+       "      <td>1.000000e+00</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>1</td>\n",
+       "      <td>3.359016e-07</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>2</td>\n",
+       "      <td>3.386070e-02</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>3</td>\n",
+       "      <td>9.997283e-01</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>4</td>\n",
+       "      <td>1.000000e+00</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>995</td>\n",
+       "      <td>2.006321e-06</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>996</td>\n",
+       "      <td>2.786478e-03</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>997</td>\n",
+       "      <td>1.000000e+00</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>998</td>\n",
+       "      <td>1.647046e-06</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>999</td>\n",
+       "      <td>1.879582e-04</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>1000 rows × 1 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "               x1\n",
+       "0    1.000000e+00\n",
+       "1    3.359016e-07\n",
+       "2    3.386070e-02\n",
+       "3    9.997283e-01\n",
+       "4    1.000000e+00\n",
+       "..            ...\n",
+       "995  2.006321e-06\n",
+       "996  2.786478e-03\n",
+       "997  1.000000e+00\n",
+       "998  1.647046e-06\n",
+       "999  1.879582e-04\n",
+       "\n",
+       "[1000 rows x 1 columns]"
+      ]
+     },
+     "execution_count": 198,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "yhat=pd.DataFrame(yy[\"x1\"].apply(sigma))\n",
+    "yhat"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 199,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>x1</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <td>0</td>\n",
+       "      <td>1.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>1</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>2</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>3</td>\n",
+       "      <td>1.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>4</td>\n",
+       "      <td>1.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>995</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>996</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>997</td>\n",
+       "      <td>1.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>998</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>999</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>1000 rows × 1 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "      x1\n",
+       "0    1.0\n",
+       "1    0.0\n",
+       "2    0.0\n",
+       "3    1.0\n",
+       "4    1.0\n",
+       "..   ...\n",
+       "995  0.0\n",
+       "996  0.0\n",
+       "997  1.0\n",
+       "998  0.0\n",
+       "999  0.0\n",
+       "\n",
+       "[1000 rows x 1 columns]"
+      ]
+     },
+     "execution_count": 199,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "yhat=yhat.round({'x1': 0})\n",
+    "yhat"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 200,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>HasCard</th>\n",
+       "      <th>Spends</th>\n",
+       "      <th>UsesCoupon</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>8.581598</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1.464047</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>2</td>\n",
+       "      <td>0</td>\n",
+       "      <td>3.464725</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>3</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0.801979</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>4</td>\n",
+       "      <td>0</td>\n",
+       "      <td>9.960163</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>995</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1.773487</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>996</td>\n",
+       "      <td>0</td>\n",
+       "      <td>3.026836</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>997</td>\n",
+       "      <td>1</td>\n",
+       "      <td>9.309856</td>\n",
+       "      <td>1</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>998</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1.739323</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>999</td>\n",
+       "      <td>0</td>\n",
+       "      <td>2.559551</td>\n",
+       "      <td>0</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>1000 rows × 3 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "     HasCard    Spends  UsesCoupon\n",
+       "0          0  8.581598           1\n",
+       "1          0  1.464047           0\n",
+       "2          0  3.464725           0\n",
+       "3          1  0.801979           1\n",
+       "4          0  9.960163           1\n",
+       "..       ...       ...         ...\n",
+       "995        0  1.773487           0\n",
+       "996        0  3.026836           0\n",
+       "997        1  9.309856           1\n",
+       "998        0  1.739323           0\n",
+       "999        0  2.559551           0\n",
+       "\n",
+       "[1000 rows x 3 columns]"
+      ]
+     },
+     "execution_count": 200,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "data"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 201,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "data=data.drop(columns=['UsesCoupon'])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 202,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>HasCard</th>\n",
+       "      <th>Spends</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>8.581598</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1.464047</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>2</td>\n",
+       "      <td>0</td>\n",
+       "      <td>3.464725</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>3</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0.801979</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>4</td>\n",
+       "      <td>0</td>\n",
+       "      <td>9.960163</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>995</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1.773487</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>996</td>\n",
+       "      <td>0</td>\n",
+       "      <td>3.026836</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>997</td>\n",
+       "      <td>1</td>\n",
+       "      <td>9.309856</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>998</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1.739323</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>999</td>\n",
+       "      <td>0</td>\n",
+       "      <td>2.559551</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>1000 rows × 2 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "     HasCard    Spends\n",
+       "0          0  8.581598\n",
+       "1          0  1.464047\n",
+       "2          0  3.464725\n",
+       "3          1  0.801979\n",
+       "4          0  9.960163\n",
+       "..       ...       ...\n",
+       "995        0  1.773487\n",
+       "996        0  3.026836\n",
+       "997        1  9.309856\n",
+       "998        0  1.739323\n",
+       "999        0  2.559551\n",
+       "\n",
+       "[1000 rows x 2 columns]"
+      ]
+     },
+     "execution_count": 202,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "data"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 203,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>HasCard</th>\n",
+       "      <th>Spends</th>\n",
+       "      <th>Fitted</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>8.581598</td>\n",
+       "      <td>1.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>1</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1.464047</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>2</td>\n",
+       "      <td>0</td>\n",
+       "      <td>3.464725</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>3</td>\n",
+       "      <td>1</td>\n",
+       "      <td>0.801979</td>\n",
+       "      <td>1.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>4</td>\n",
+       "      <td>0</td>\n",
+       "      <td>9.960163</td>\n",
+       "      <td>1.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "      <td>...</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>995</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1.773487</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>996</td>\n",
+       "      <td>0</td>\n",
+       "      <td>3.026836</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>997</td>\n",
+       "      <td>1</td>\n",
+       "      <td>9.309856</td>\n",
+       "      <td>1.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>998</td>\n",
+       "      <td>0</td>\n",
+       "      <td>1.739323</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>999</td>\n",
+       "      <td>0</td>\n",
+       "      <td>2.559551</td>\n",
+       "      <td>0.0</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "<p>1000 rows × 3 columns</p>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "     HasCard    Spends  Fitted\n",
+       "0          0  8.581598     1.0\n",
+       "1          0  1.464047     0.0\n",
+       "2          0  3.464725     0.0\n",
+       "3          1  0.801979     1.0\n",
+       "4          0  9.960163     1.0\n",
+       "..       ...       ...     ...\n",
+       "995        0  1.773487     0.0\n",
+       "996        0  3.026836     0.0\n",
+       "997        1  9.309856     1.0\n",
+       "998        0  1.739323     0.0\n",
+       "999        0  2.559551     0.0\n",
+       "\n",
+       "[1000 rows x 3 columns]"
+      ]
+     },
+     "execution_count": 203,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "data.insert(2, \"Fitted\",yhat, True)\n",
+    "data"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 204,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "HasCard    45\n",
+       "Spends     45\n",
+       "Fitted     45\n",
+       "dtype: int64"
+      ]
+     },
+     "execution_count": 204,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "first=data[(data.HasCard == 1) & (data.Spends>1)& (data.Spends< 2)&(data.Fitted==1)].count()\n",
+    "sec=data[(data.HasCard == 1) & (data.Spends>2)&(data.Spends< 3)&(data.Fitted==1)].count()\n",
+    "third=data[(data.HasCard == 1) &(data.Spends> 3)& (data.Spends< 4)&(data.Fitted==1)].count()\n",
+    "fourth=data[(data.HasCard == 1) &(data.Spends> 4)& (data.Spends< 5)&(data.Fitted==1)].count()\n",
+    "fifth=data[(data.HasCard == 1) & (data.Spends>5)&(data.Spends< 6)&(data.Fitted==1)].count()\n",
+    "sixth=data[(data.HasCard == 1) &(data.Spends>6)& (data.Spends< 7)&(data.Fitted==1)].count()\n",
+    "seventh=data[(data.HasCard == 1) & (data.Spends>7)&(data.Spends< 8)&(data.Fitted==1)].count()\n",
+    "first"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 205,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "HasCard    57\n",
+       "Spends     57\n",
+       "Fitted     57\n",
+       "dtype: int64"
+      ]
+     },
+     "execution_count": 205,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "sec"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 206,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "HasCard    47\n",
+       "Spends     47\n",
+       "Fitted     47\n",
+       "dtype: int64"
+      ]
+     },
+     "execution_count": 206,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "third"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 207,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "HasCard    63\n",
+       "Spends     63\n",
+       "Fitted     63\n",
+       "dtype: int64"
+      ]
+     },
+     "execution_count": 207,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "fourth"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 208,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "HasCard    35\n",
+       "Spends     35\n",
+       "Fitted     35\n",
+       "dtype: int64"
+      ]
+     },
+     "execution_count": 208,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "fifth"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 209,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "HasCard    40\n",
+       "Spends     40\n",
+       "Fitted     40\n",
+       "dtype: int64"
+      ]
+     },
+     "execution_count": 209,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "sixth"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 210,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "HasCard    48\n",
+       "Spends     48\n",
+       "Fitted     48\n",
+       "dtype: int64"
+      ]
+     },
+     "execution_count": 210,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "seventh"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 211,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "HasCard    0\n",
+       "Spends     0\n",
+       "Fitted     0\n",
+       "dtype: int64"
+      ]
+     },
+     "execution_count": 211,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "first0=data[(data.HasCard == 0) & (data.Spends>1)& (data.Spends< 2)&(data.Fitted==1)].count()\n",
+    "sec0=data[(data.HasCard == 0) & (data.Spends>2)&(data.Spends< 3)&(data.Fitted==1)].count()\n",
+    "third0=data[(data.HasCard == 0) &(data.Spends> 3)& (data.Spends< 4)&(data.Fitted==1)].count()\n",
+    "fourth0=data[(data.HasCard == 0) &(data.Spends> 4)& (data.Spends< 5)&(data.Fitted==1)].count()\n",
+    "fifth0=data[(data.HasCard == 0) & (data.Spends>5)&(data.Spends< 6)&(data.Fitted==1)].count()\n",
+    "sixth0=data[(data.HasCard == 0) &(data.Spends>6)& (data.Spends< 7)&(data.Fitted==1)].count()\n",
+    "seventh0=data[(data.HasCard == 0) & (data.Spends>7)&(data.Spends< 8)&(data.Fitted==1)].count()\n",
+    "first0"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 212,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "HasCard    0\n",
+       "Spends     0\n",
+       "Fitted     0\n",
+       "dtype: int64"
+      ]
+     },
+     "execution_count": 212,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "sec0"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 213,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "HasCard    0\n",
+       "Spends     0\n",
+       "Fitted     0\n",
+       "dtype: int64"
+      ]
+     },
+     "execution_count": 213,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "third0"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 214,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "HasCard    38\n",
+       "Spends     38\n",
+       "Fitted     38\n",
+       "dtype: int64"
+      ]
+     },
+     "execution_count": 214,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "fourth0"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 215,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "HasCard    56\n",
+       "Spends     56\n",
+       "Fitted     56\n",
+       "dtype: int64"
+      ]
+     },
+     "execution_count": 215,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "fifth0"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 216,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "HasCard    51\n",
+       "Spends     51\n",
+       "Fitted     51\n",
+       "dtype: int64"
+      ]
+     },
+     "execution_count": 216,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "sixth0"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 217,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "HasCard    39\n",
+       "Spends     39\n",
+       "Fitted     39\n",
+       "dtype: int64"
+      ]
+     },
+     "execution_count": 217,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "seventh0"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 220,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "df= {'AnnualSpend':  ['Card:  Yes','Card:  No'],\n",
+    "        '$1000': ['45','0'] ,\n",
+    "        '$2000': ['57','0'],\n",
+    "        '$3000': ['47','0'],\n",
+    "        '$4000': ['63','38'],\n",
+    "        '$5000': ['35','56'],\n",
+    "        '$6000': ['40','51'],\n",
+    "        '$7000': ['48','39']}\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 221,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/html": [
+       "<div>\n",
+       "<style scoped>\n",
+       "    .dataframe tbody tr th:only-of-type {\n",
+       "        vertical-align: middle;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe tbody tr th {\n",
+       "        vertical-align: top;\n",
+       "    }\n",
+       "\n",
+       "    .dataframe thead th {\n",
+       "        text-align: right;\n",
+       "    }\n",
+       "</style>\n",
+       "<table border=\"1\" class=\"dataframe\">\n",
+       "  <thead>\n",
+       "    <tr style=\"text-align: right;\">\n",
+       "      <th></th>\n",
+       "      <th>AnnualSpend</th>\n",
+       "      <th>$1000</th>\n",
+       "      <th>$2000</th>\n",
+       "      <th>$3000</th>\n",
+       "      <th>$4000</th>\n",
+       "      <th>$5000</th>\n",
+       "      <th>$6000</th>\n",
+       "      <th>$7000</th>\n",
+       "    </tr>\n",
+       "  </thead>\n",
+       "  <tbody>\n",
+       "    <tr>\n",
+       "      <td>0</td>\n",
+       "      <td>Card:  Yes</td>\n",
+       "      <td>45</td>\n",
+       "      <td>57</td>\n",
+       "      <td>47</td>\n",
+       "      <td>63</td>\n",
+       "      <td>35</td>\n",
+       "      <td>40</td>\n",
+       "      <td>48</td>\n",
+       "    </tr>\n",
+       "    <tr>\n",
+       "      <td>1</td>\n",
+       "      <td>Card:  No</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>0</td>\n",
+       "      <td>38</td>\n",
+       "      <td>56</td>\n",
+       "      <td>51</td>\n",
+       "      <td>39</td>\n",
+       "    </tr>\n",
+       "  </tbody>\n",
+       "</table>\n",
+       "</div>"
+      ],
+      "text/plain": [
+       "  AnnualSpend $1000 $2000 $3000 $4000 $5000 $6000 $7000\n",
+       "0  Card:  Yes    45    57    47    63    35    40    48\n",
+       "1   Card:  No     0     0     0    38    56    51    39"
+      ]
+     },
+     "execution_count": 221,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "data1=pd.DataFrame(df)\n",
+    "data1"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 222,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# Looking at the above table we observe that for people spending less than 5000 dollars, and having card were more \n",
+    "# likely to use coupons than people not having card\n",
+    "# for people spending more than 5000 dollars , people not having store cards spent more\n",
+    "# this might indicate impulsive one time buyers"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "# PART 3: A nice marketing strategy would be to promote and market the utility of store card to customers since\n",
+    "# more people used coupons who had store cards, therefore more store cards must be issued for higher profitsgrgr"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.7.4"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}
